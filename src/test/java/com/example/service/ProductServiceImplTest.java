@@ -73,4 +73,56 @@ public class ProductServiceImplTest {
     }
 
 
+    void getById_shouldReturnProductDtoAndSaveProductEntity() {
+        Long id = 1L;
+
+        Product product = new Product();
+        product.setId(id);
+        product.setName("i drive like 1Paul Walker girl ;)");
+
+        ProductDto expectedDto = new ProductDto();
+        expectedDto.setId(1L);
+        expectedDto.setName("i drive like Paul Walker girl ;");
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(productMapper.toDto(product)).thenReturn(expectedDto);
+
+        ProductDto actualDto = productServiceimpl.getById(id);
+        assertEquals(expectedDto.getId(), actualDto.getId());
+        assertEquals(expectedDto.getName(), actualDto.getName());
+
+        verify(productRepository).findById(id);
+        verify(productMapper).toDto(product);
+
+
+    }
+
+    @Test
+    void getAll_shouldReturnListOfProductDtos() {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Test Product");
+
+        List<Product> products = List.of(product);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+        productDto.setName("Test Product");
+
+        List<ProductDto> productDtos = List.of(productDto);
+
+        when(productRepository.findAll()).thenReturn(products);
+        when(productMapper.toDtoList(products)).thenReturn(productDtos);
+
+
+        List<ProductDto> result = productServiceimpl.getAll();
+
+
+        assertEquals(1, result.size());
+        assertEquals("Test Product", result.get(0).getName());
+
+        verify(productRepository).findAll();
+        verify(productMapper).toDtoList(products);
+    }
 }
